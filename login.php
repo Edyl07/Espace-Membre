@@ -27,10 +27,10 @@
                 <input type="text" name="username" class="form-control" id=""  required>
             </div>
             <div class="form-group">
-                <label for="">Password</label>
+                <label for="">Mot de passe <a href="forget.php">(j'ai oublié mon Mot de passe)</a></label>
                 <input type="password" name="password" class="form-control" id="" required>
             </div>
-            <button type="submit" class="btn btn-primary">M'inscrire</button>
+            <button type="submit" class="btn btn-primary">Se connecter</button>
         </form>
 
 <?php require 'inc/footer.php' ?>
