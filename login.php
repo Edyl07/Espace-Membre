@@ -1,6 +1,11 @@
-<?php require 'inc/functions.php' ?>
-
 <?php
+    require 'inc/functions.php';
+    reconnect_from_cookie();
+    if(isset($_SESSION['auth'])){
+        header('Location: account.php');
+        exit();
+    }
+
     if (!empty($_POST) && !empty($_POST['username']) && !empty($_POST['password'])){
         require 'inc/db.php';
         $req = $pdo->prepare('SELECT * FROM users WHERE (username = :username OR email = :username) AND confirmed_at IS NOT NULL');
@@ -10,6 +15,13 @@
             session_start();
             $_SESSION['auth'] = $user;
             $_SESSION['flash']['success'] = "Vous êtes maintenant connecté au site";
+            if($_POST['remember']){
+                $remember_token = str_random(250);
+                $pdo->prepare('UPDATE  users SET remember_token = ? WHERE id = ?')->execute([$remember_token, $user->id]);
+                setcookie('remember', $user->id. '//' .$remember_token. sha1($user->id. 'mySelf'), time() + 60 * 60 * 24 * 7);
+                header('Location: account.php');
+                exit();
+            }
             header('Location: account.php');
             exit();
         }else{
@@ -29,6 +41,11 @@
             <div class="form-group">
                 <label for="">Mot de passe <a href="forget.php">(j'ai oublié mon Mot de passe)</a></label>
                 <input type="password" name="password" class="form-control" id="" required>
+            </div>
+            <div class="form-group">
+                <label style="cursor: pointer">
+                    <input type="checkbox" name="remember" value="1" id="" class="">Se souvenir de moi
+                </label>
             </div>
             <button type="submit" class="btn btn-primary">Se connecter</button>
         </form>
